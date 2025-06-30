@@ -95,7 +95,7 @@ python utils/visualization.py --model SRFlowGenerator --num_samples 4
 
 **Example Output:**
 
-<img src="visualizations/SRModel_vs_bicubic/SRModel_sample_1_vs_bicubic.png" alt="Sample Visualization" width="400"/>
+<img src="./readme_figs/SRModel_vs_bicubic/SRModel_sample_1_vs_bicubic.png" alt="Sample Visualization" width="400"/>
 
 ---
 
@@ -108,11 +108,11 @@ python evaluate.py --model SRFlowGenerator
 
 **Best Sample (SRModel, seed 42):**
 
-<img src="visualizations_SRModel_seed42/SRModel_seed42_best_qualitative_grid.png" alt="Best PSNR Sample" width="400"/>
+<img src="./readme_figs//SRModel_seed42_best_qualitative_grid.png" alt="Best PSNR Sample" width="400"/>
 
 **Worst Sample (SRModel, seed 42):**
 
-<img src="visualizations_SRModel_seed42/SRModel_seed42_worst_qualitative_grid.png" alt="Worst PSNR Sample" width="400"/>
+<img src="./readme_figs/SRModel_seed42_worst_qualitative_grid.png" alt="Worst PSNR Sample" width="400"/>
 
 ---
 
@@ -126,6 +126,6 @@ The flag `--num_images` determines how many test images to compare, highlighting
 
 **Side-by-Side Comparison:**
 
-<img src="comparison_plots/SRFlow_Significantly_Better.png" alt="Model Comparison" width="400"/>
+<img src="./readme_figs/SRFlow_Significantly_Better.png" alt="Model Comparison" width="400"/>
 
 ---
