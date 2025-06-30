@@ -15,7 +15,7 @@ git clone https://github.com/danielbilikId/SRFlowGenerator-for-div2k-SR.git
 cd your_repo_name
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install torch torchvision matplotlib numpy tqdm kagglehub scikit-image pytorch-fid
+pip install -r requirements.txt
 ```
 
 ### config.py includes:
