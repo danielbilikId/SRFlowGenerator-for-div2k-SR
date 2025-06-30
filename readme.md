@@ -95,7 +95,7 @@ python utils/visualization.py --model SRFlowGenerator --num_samples 4
 
 **Example Output:**
 
-<img src="./readme_figs/SRModel_vs_bicubic/SRModel_sample_1_vs_bicubic.png" alt="Sample Visualization" width="400"/>
+<img src="./readme_figs/SRModel_sample_1_vs_bicubic.png" alt="Sample Visualization" width="400"/>
 
 ---
 
@@ -108,7 +108,7 @@ python evaluate.py --model SRFlowGenerator
 
 **Best Sample (SRModel, seed 42):**
 
-<img src="./readme_figs//SRModel_seed42_best_qualitative_grid.png" alt="Best PSNR Sample" width="400"/>
+<img src="./readme_figs/SRModel_seed42_best_qualitative_grid.png" alt="Best PSNR Sample" width="400"/>
 
 **Worst Sample (SRModel, seed 42):**
 
