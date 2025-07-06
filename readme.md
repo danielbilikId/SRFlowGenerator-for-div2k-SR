@@ -5,6 +5,7 @@ This repository implements and compares Super-Resolution (SR) models: a Vanilla 
 This also includes ablation studies with training with a wegihted mse+mge loss 
 
 Osher sidi – 318420239
+
 Daniel Bilik – 213196207
 
 ---
