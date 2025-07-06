@@ -143,7 +143,7 @@ def load_model(model_type, seed=42):
     else:
         raise ValueError("Invalid model_type. Choose 'SRModel' or 'SRFlowGenerator'.")
     
-    weight_path = f'./{model_type}_seed_{seed}_weights.pth'
+    weight_path = f'./weights/{model_type}_seed_{seed}_weights.pth'
     if not os.path.exists(weight_path):
         print(f"Warning: Weights not found at {weight_path}. Skipping model load for {model_type} seed {seed}.")
         return None

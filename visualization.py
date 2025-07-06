@@ -29,8 +29,8 @@ def visualize_generated_images(model_type, ablate, num_samples_to_show=4, seed=4
     """
     _, _, test_loader = get_dataloaders()
 
-    if (ablate==True):  model_weights_path = f'./{model_type}_ablated_seed_{seed}_weights.pth'
-    else: model_weights_path = f'./{model_type}_seed_{seed}_weights.pth'
+    if (ablate==True):  model_weights_path = f'./weights/{model_type}_ablated_seed_{seed}_weights.pth'
+    else: model_weights_path = f'./weights/{model_type}_seed_{seed}_weights.pth'
 
     if model_type == 'SRModel':
         model = SRModel(upscale_factor=UPSCALE_FACTOR, channels=CHANNELS).to(DEVICE)

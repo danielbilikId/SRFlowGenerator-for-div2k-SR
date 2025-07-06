@@ -1,3 +1,6 @@
+#Osher sidi – 318420239
+#Daniel Bilik – 213196207
+
 from PIL import Image
 from torchvision import transforms
 

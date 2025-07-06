@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-ablated = False
+ablated = True
 model_type = 'SRFlowGenerator'  # or 'SRModel'
 seeds = [42, 123, 789]
 histories = []
