@@ -1,3 +1,6 @@
+#Osher sidi – 318420239
+#Daniel Bilik – 213196207
+
 import torch
 import numpy as np
 import os
