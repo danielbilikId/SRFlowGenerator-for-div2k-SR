@@ -52,6 +52,7 @@ SRFLOW_GC = 32
 ├── train.py
 ├── evaluate.py
 ├── compare_models.py
+├── plot_loss.py
 ├── utils/
 │   ├── metrics.py
 │   └── visualization.py
@@ -92,6 +93,14 @@ python train.py --model SRModel --load_weights
 - `./weights/SRModel_weights.pth`
 - `SRModel_training_history.png`
 - `SRModel_training_history.npy`
+
+training is preformed on 3 seeds: 42, 123, 789 
+and each of the individuall loss histories are saved to .`/root` dir as well as the weights saved to the `./weights` folder
+
+to not ablate either disregard the flag entirely or use:
+```bash
+--ablate False
+```
 ---
 
 ### 3. Visualize Samples
@@ -123,12 +132,13 @@ python evaluate.py --model SRFlowGenerator --ablate Ttue
 
 <img src="./readme_figs/SRModel_seed42_worst_qualitative_grid.png" alt="Worst PSNR Sample" width="400"/>
 
+the evaluation code evalutes each of the seed trainings on the test set and prints out PSNR, SSIM and FID scores. for each of the seeds as well as the average. 
 ---
 
 ### 5. Compare Models
 
 ```bash
-python compare_models.py --num_images 3
+python compare_models.py --num_images 4
 ```
 
 The flag `--num_images` determines how many test images to compare, highlighting where each model performs best.
@@ -136,5 +146,4 @@ The flag `--num_images` determines how many test images to compare, highlighting
 **Side-by-Side Comparison:**
 
 <img src="./readme_figs/SRFlow_Significantly_Better.png" alt="Model Comparison" width="400"/>
-
 ---
