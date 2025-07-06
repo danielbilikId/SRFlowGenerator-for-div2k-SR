@@ -1,3 +1,6 @@
+#Osher sidi – 318420239
+#Daniel Bilik – 213196207
+
 import os
 import torch
 import matplotlib.pyplot as plt
@@ -42,18 +45,15 @@ def extract_zoom_patches(image, regions, target_size=None):
         list: A list of image patch tensors.
     """
     patches = []
-    # Ensure image is 2D (H, W) or 3D (C, H, W)
-    if image.dim() == 4: # If it's a batch, take the first image
+    if image.dim() == 4:
         image = image[0]
     
     if target_size and (image.shape[-2], image.shape[-1]) != target_size:
-        # Only resize if target_size is provided and differs from current size
-        image = TF.resize(image, target_size, antialias=True) # Use antialias for better quality
+        image = TF.resize(image, target_size, antialias=True)
 
-    _, H, W = image.shape # Get height and width after potential resize
+    _, H, W = image.shape 
 
     for x, y, size in regions:
-        # Adjust coordinates to ensure they are within image bounds
         x_start = max(0, x)
         y_start = max(0, y)
         x_end = min(W, x + size)
@@ -61,7 +61,6 @@ def extract_zoom_patches(image, regions, target_size=None):
         
         patch = image[:, y_start:y_end, x_start:x_end]
         
-        # Pad if the extracted patch is smaller than the requested size (e.g., at borders)
         if patch.shape[1] < size or patch.shape[2] < size:
             pad_h_start = 0
             pad_h_end = size - patch.shape[1]
@@ -94,24 +93,20 @@ def plot_comparison_with_zooms(lr_img, hr_img, sr1_img, sr2_img,
     num_zoom_cols = len(regions)
     fig, axes = plt.subplots(4, num_zoom_cols + 1, figsize=(4 * (num_zoom_cols + 1), 16))
     
-    # Get the target full resolution for all images to align them (e.g., 1024x1024)
     target_display_h, target_display_w = sr1_img.shape[-2], sr1_img.shape[-1]
     
     images = [lr_img, sr1_img, sr2_img, hr_img]
     row_titles = ['Low-Res Input (Upscaled)', 'SRModel Output', 'SRFlow Output', 'Ground Truth']
 
     for row, (img_tensor, label) in enumerate(zip(images, row_titles)):
-        # Determine the target size for this specific image for displaying and patch extraction
         current_target_size = (target_display_h, target_display_w)
         
-        # Resize main image for display
         display_img = TF.resize(img_tensor.cpu().clamp(0,1), current_target_size, antialias=True)
         
         axes[row][0].imshow(to_pil_image(display_img))
         axes[row][0].set_title(label, fontsize=14)
         axes[row][0].axis('off')
 
-        # Extract patches, resizing the source image to target_display_h/w first
         patches = extract_zoom_patches(img_tensor, regions, target_size=current_target_size)
         for col, patch in enumerate(patches):
             axes[row][col + 1].imshow(to_pil_image(patch.cpu().clamp(0, 1)))
@@ -127,7 +122,6 @@ def plot_comparison_with_zooms(lr_img, hr_img, sr1_img, sr2_img,
         plt.savefig(save_path)
     plt.show()
 
-# ---------- Load Models and Data ----------
 
 def load_model(model_type, seed=42):
     """
@@ -156,7 +150,6 @@ def load_model(model_type, seed=42):
     model.load_state_dict(torch.load(weight_path, map_location=DEVICE))
     return model.to(DEVICE).eval()
 
-# ---------- Main Comparison and Evaluation Functions ----------
 
 def compare_models_qualitative(num_images=5):
     """
@@ -167,9 +160,8 @@ def compare_models_qualitative(num_images=5):
     Returns:
         list: A list of dictionaries, each containing data for one comparison sample.
     """
-    # Get all dataloaders, but we'll manually sample from the test_dataset
     _, _, test_loader = get_dataloaders()
-    test_dataset = test_loader.dataset # Get the dataset directly
+    test_dataset = test_loader.dataset 
 
     model_sr = load_model('SRModel')
     model_flow = load_model('SRFlowGenerator')
@@ -178,35 +170,31 @@ def compare_models_qualitative(num_images=5):
         print("Cannot run qualitative comparison: one or both models could not be loaded.")
         return []
 
-    # Initialize torchmetrics for individual image PSNR/SSIM calculation
     psnr_metric_individual = get_psnr_ssim_metrics(data_range=1.0)[0].to(DEVICE)
     ssim_metric_individual = get_psnr_ssim_metrics(data_range=1.0)[1].to(DEVICE)
 
     results = []
     
-    # Randomly select indices for the desired number of images
-    # Ensure num_images doesn't exceed dataset size
     num_images = min(num_images, len(test_dataset))
     selected_indices = np.random.choice(len(test_dataset), num_images, replace=False)
 
     print(f"Collecting {num_images} samples for qualitative comparison...")
     with torch.no_grad():
         for i, idx in enumerate(tqdm(selected_indices, desc="Processing selected images")):
-            lr_img, hr_img = test_dataset[idx] # Get single image
-            lr_img = lr_img.unsqueeze(0).to(DEVICE) # Add batch dimension
-            hr_img = hr_img.unsqueeze(0).to(DEVICE) # Add batch dimension
+            lr_img, hr_img = test_dataset[idx] 
+            lr_img = lr_img.unsqueeze(0).to(DEVICE) 
+            hr_img = hr_img.unsqueeze(0).to(DEVICE) 
 
             sr1_img = model_sr(lr_img)
             sr2_img = model_flow(lr_img)
 
-            # Calculate PSNR/SSIM for each image pair individually
             psnr1 = psnr_metric_individual(sr1_img, hr_img).item()
             ssim1 = ssim_metric_individual(sr1_img, hr_img).item()
             psnr2 = psnr_metric_individual(sr2_img, hr_img).item()
             ssim2 = ssim_metric_individual(sr2_img, hr_img).item()
 
             results.append({
-                "index": idx, # Store original index for reference
+                "index": idx,
                 "lr": lr_img.squeeze(0).cpu().clamp(0, 1),
                 "hr": hr_img.squeeze(0).cpu().clamp(0, 1),
                 "sr1": sr1_img.squeeze(0).cpu().clamp(0, 1),
@@ -235,28 +223,26 @@ def classify_and_visualize(results):
 
     GOOD_PSNR_THRESHOLD = 30.0
     BAD_PSNR_THRESHOLD = 25.0
-    PSNR_DIFFERENCE_THRESHOLD = 2.0 # Significant difference in PSNR
+    PSNR_DIFFERENCE_THRESHOLD = 2.0 
 
     for item in results:
         psnr1 = item['psnr1']
         psnr2 = item['psnr2']
         delta = psnr1 - psnr2
 
-        # Classification based primarily on PSNR
         if psnr1 >= GOOD_PSNR_THRESHOLD and psnr2 >= GOOD_PSNR_THRESHOLD:
             both_good.append(item)
         elif psnr1 <= BAD_PSNR_THRESHOLD and psnr2 <= BAD_PSNR_THRESHOLD:
             both_bad.append(item)
-        elif delta >= PSNR_DIFFERENCE_THRESHOLD: # Model 1 PSNR significantly higher than Model 2
+        elif delta >= PSNR_DIFFERENCE_THRESHOLD: 
             model1_better.append(item)
-        elif delta <= -PSNR_DIFFERENCE_THRESHOLD: # Model 2 PSNR significantly higher than Model 1
+        elif delta <= -PSNR_DIFFERENCE_THRESHOLD:
             model2_better.append(item)
     
-    # Sort for best/worst representatives based on PSNR for selection
-    both_good.sort(key=lambda x: (x['psnr1'] + x['psnr2']) / 2, reverse=True) # Still average for "both good"
-    both_bad.sort(key=lambda x: (x['psnr1'] + x['psnr2']) / 2) # Still average for "both bad"
-    model1_better.sort(key=lambda x: x['psnr1'] - x['psnr2'], reverse=True) # Sort by PSNR difference
-    model2_better.sort(key=lambda x: x['psnr2'] - x['psnr1'], reverse=True) # Sort by PSNR difference
+    both_good.sort(key=lambda x: (x['psnr1'] + x['psnr2']) / 2, reverse=True) 
+    both_bad.sort(key=lambda x: (x['psnr1'] + x['psnr2']) / 2) 
+    model1_better.sort(key=lambda x: x['psnr1'] - x['psnr2'], reverse=True) 
+    model2_better.sort(key=lambda x: x['psnr2'] - x['psnr1'], reverse=True)
 
 
     cases = {
@@ -266,21 +252,16 @@ def classify_and_visualize(results):
         "SRFlow Significantly Better": model2_better[0] if model2_better else None,
     }
 
-    # Define the target HR output resolution (e.g., 1024x1024 if LR=256 and UPSCALE_FACTOR=4)
     target_output_h = RESIZE_HEIGHT * UPSCALE_FACTOR
     target_output_w = RESIZE_WIDTH * UPSCALE_FACTOR
 
-    # Define zoom regions relative to the target output resolution (e.g., 1024x1024)
-    # Using larger, more distinct patches.
-    zoom_patch_size = 256 # A larger patch size for better detail visibility
+    zoom_patch_size = 256
 
     regions_for_plot = [
-        (int(target_output_w * 0.1), int(target_output_h * 0.1), zoom_patch_size), # Top-leftish
-        (int(target_output_w * 0.4), int(target_output_h * 0.4), zoom_patch_size), # Mid-centerish
-        (int(target_output_w * 0.7), int(target_output_h * 0.7), zoom_patch_size), # Bottom-rightish
+        (int(target_output_w * 0.1), int(target_output_h * 0.1), zoom_patch_size), 
+        (int(target_output_w * 0.4), int(target_output_h * 0.4), zoom_patch_size), 
+        (int(target_output_w * 0.7), int(target_output_h * 0.7), zoom_patch_size), 
     ]
-    # Ensure coordinates + size don't exceed target_output_w/h.
-    # The extract_zoom_patches function has padding, but it's good to aim for within bounds.
 
     for label, case in cases.items():
         if case:
