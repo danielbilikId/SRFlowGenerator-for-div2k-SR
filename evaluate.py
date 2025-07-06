@@ -18,15 +18,15 @@ from models.srflow_model import SRFlowGenerator
 from datasets.div2k_dataset import get_dataloaders
 from utils.metrics import get_psnr_ssim_metrics
 
-def evaluate(model_type, seeds=[42, 123, 789]):
+def evaluate(model_type, ablate, seeds=[42, 123, 789]):
     _, _, test_loader = get_dataloaders()
 
     psnr_scores, ssim_scores, fid_scores = [], [], []
 
     for seed in seeds:
-        model_weights_path = f'./{model_type}_seed_{seed}_weights.pth'
+        if ablate: model_weights_path = f'./weights/{model_type}_ablated_seed_{seed}_weights.pth'
+        else: model_weights_path = f'./weights/{model_type}_seed_{seed}_weights.pth'
 
-        # Model selection
         if model_type == 'SRModel':
             model = SRModel(upscale_factor=UPSCALE_FACTOR, channels=CHANNELS).to(DEVICE)
         elif model_type == 'SRFlowGenerator':
@@ -83,7 +83,6 @@ def evaluate(model_type, seeds=[42, 123, 789]):
         shutil.rmtree(output_dir_real)
         shutil.rmtree(output_dir_generated)
 
-        # Optional: visualize results for first seed
         if seed == seeds[0]:
             model.eval()
             with torch.no_grad():
@@ -146,17 +145,14 @@ def evaluate(model_type, seeds=[42, 123, 789]):
                 num = len(sample_set)
                 plt.figure(figsize=(10, 4.5 * num))
                 for i, (lr, sr, hr, score) in enumerate(sample_set):
-                    # Convert to images
                     img_lr = TF.to_pil_image(lr.squeeze(0).clamp(0, 1))
                     img_sr = TF.to_pil_image(sr.squeeze(0).clamp(0, 1))
                     img_hr = TF.to_pil_image(hr.squeeze(0).clamp(0, 1))
 
-                    # Save individual images
                     img_lr.save(os.path.join(vis_dir, f'{save_path_prefix}_sample_{i+1}_LR.png'))
                     img_sr.save(os.path.join(vis_dir, f'{save_path_prefix}_sample_{i+1}_SR.png'))
                     img_hr.save(os.path.join(vis_dir, f'{save_path_prefix}_sample_{i+1}_GT.png'))
 
-                    # Plot
                     plt.subplot(num, 3, i * 3 + 1)
                     plt.imshow(img_lr)
                     plt.title(f"{title_prefix} #{i+1} - LR")
@@ -175,11 +171,13 @@ def evaluate(model_type, seeds=[42, 123, 789]):
                 plt.savefig(os.path.join(vis_dir, f'{save_path_prefix}_qualitative_grid.png'))
                 plt.show()
 
-            # Save and plot both top and bottom performing samples
-            save_sample_set(top_n, "Best", f"{model_type}_seed{seed}_best")
-            save_sample_set(worst_n, "Worst", f"{model_type}_seed{seed}_worst")
+            if (ablate==True):
+                save_sample_set(top_n, "Best", f"{model_type}_ablated_seed{seed}_best")
+                save_sample_set(worst_n, "Worst", f"{model_type}_ablated_seed{seed}_worst")
+            else: 
+                save_sample_set(top_n, "Best", f"{model_type}_seed{seed}_best")
+                save_sample_set(worst_n, "Worst", f"{model_type}_seed{seed}_worst")
 
-    # Final summary
     print(f"\n=== {model_type} Final Test Results Over Seeds {seeds} ===")
     print(f"PSNR: Mean = {np.mean(psnr_scores):.4f}, Std = {np.std(psnr_scores):.4f}")
     print(f"SSIM: Mean = {np.mean(ssim_scores):.4f}, Std = {np.std(ssim_scores):.4f}")
@@ -190,5 +188,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default='SRModel',
                         choices=['SRModel', 'SRFlowGenerator'],
                         help="Specify the model to evaluate.")
+    parser.add_argument('--ablate', type= bool, default=False, choices=[True,False])
+
     args = parser.parse_args()
-    evaluate(args.model)
+    evaluate(args.model, args.ablate)
