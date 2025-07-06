@@ -112,6 +112,7 @@ python visualization.py --model SRFlowGenerator --num_samples 4 --ablate Ttue
 ```
 
 **Example Output:**
+
 <img src="./readme_figs/SRModel_sample_1_vs_bicubic.png" alt="Sample Visualization" width="400"/>
 ---
 
