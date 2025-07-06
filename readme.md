@@ -123,6 +123,7 @@ python evaluate.py --model SRFlowGenerator
 #to run ablated studies version:
 python evaluate.py --model SRFlowGenerator --ablate Ttue
 ```
+The evaluation code evalutes each of the seed trainings on the test set and prints out PSNR, SSIM and FID scores. for each of the seeds as well as the average. 
 
 **Best Sample (SRModel, seed 42):**
 
@@ -132,7 +133,6 @@ python evaluate.py --model SRFlowGenerator --ablate Ttue
 
 <img src="./readme_figs/SRModel_seed42_worst_qualitative_grid.png" alt="Worst PSNR Sample" width="400"/>
 
-the evaluation code evalutes each of the seed trainings on the test set and prints out PSNR, SSIM and FID scores. for each of the seeds as well as the average. 
 ---
 
 ### 5. Compare Models
