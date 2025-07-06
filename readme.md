@@ -1,6 +1,9 @@
 # Super-Resolution Models Comparison
 
 This repository implements and compares Super-Resolution (SR) models: a Vanilla CNN-based model and SRFlow. It upscales low-resolution (LR) images to high-resolution (HR) and evaluates results using metrics and visualizations.
+This also includes ablation studies with training with a wegihted mse+mge loss 
+Osher sidi – 318420239
+Daniel Bilik – 213196207
 
 ---
 ### Prerequisites
@@ -56,8 +59,10 @@ SRFLOW_GC = 32
 │   ├── sr_vanilla_model.py
 │   └── srflow_model.py
 ├── datasets/div2k_dataset.py
-├── [model_name]_weights.pth
-└── [model_name]_seed_[seed]_weights.pth
+├── data/
+├── weights/
+│   ├── [model_name]_ablated_seed_[seed]_weights.pth
+│   └── [model_name]_seed_[seed]_weights.pth
 ```
 
 ---
@@ -68,6 +73,7 @@ SRFLOW_GC = 32
 ```bash
 python download_dataset.py
 ```
+## make sure to unload the div2k dataset into the data/ folder. 
 
 ---
 
@@ -75,28 +81,29 @@ python download_dataset.py
 ```bash
 python train.py --model SRModel
 python train.py --model SRFlowGenerator
+#to run ablated studies version:
+python train.py --model SRFlowGenerator --ablate True
 
 # To resume training from earlier state:
 python train.py --model SRModel --load_weights
 ```
 
 **Output:**
-- `SRModel_weights.pth`
+- `./weights/SRModel_weights.pth`
 - `SRModel_training_history.png`
-
+- `SRModel_training_history.npy`
 ---
 
 ### 3. Visualize Samples
-
 ```bash
-python utils/visualization.py --model SRModel --num_samples 4
-python utils/visualization.py --model SRFlowGenerator --num_samples 4
+python visualization.py --model SRModel --num_samples 4
+python visualization.py --model SRFlowGenerator --num_samples 4
+#to run ablated studies version:
+python visualization.py --model SRFlowGenerator --num_samples 4 --ablate Ttue
 ```
 
 **Example Output:**
-
 <img src="./readme_figs/SRModel_sample_1_vs_bicubic.png" alt="Sample Visualization" width="400"/>
-
 ---
 
 ### 4. Evaluate Models
@@ -104,6 +111,8 @@ python utils/visualization.py --model SRFlowGenerator --num_samples 4
 ```bash
 python evaluate.py --model SRModel
 python evaluate.py --model SRFlowGenerator
+#to run ablated studies version:
+python evaluate.py --model SRFlowGenerator --ablate Ttue
 ```
 
 **Best Sample (SRModel, seed 42):**
