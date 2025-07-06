@@ -52,11 +52,11 @@ def train(model_type, load_weights,ablate, random_seed=None):
         raise ValueError(f"Unknown model type: {model_type}. Choose 'SRModel', 'SRFlowGenerator', or 'RealNVP_SR'.")
     if (ablate == True):
             print(f"ablating is on")
-            model_weights_path = f'./{model_type}_ablated_seed_{random_seed}_weights.pth'
+            model_weights_path = f'./weights/{model_type}_ablated_seed_{random_seed}_weights.pth'
             history_path = f'./{model_type}_ablated_seed_{random_seed}_training_history.npy'
             plot_path = f'./{model_type}_ablated_seed_{random_seed}_training_history.png'
     else: 
-        model_weights_path = f'./{model_type}_seed_{random_seed}_weights.pth'
+        model_weights_path = f'./weights/{model_type}_seed_{random_seed}_weights.pth'
         history_path = f'./{model_type}_seed_{random_seed}_training_history.npy'
         plot_path = f'./{model_type}_seed_{random_seed}_training_history.png'
         
