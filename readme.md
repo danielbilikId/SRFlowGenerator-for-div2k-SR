@@ -1,7 +1,9 @@
 # Super-Resolution Models Comparison
+#### SRFlowGenerator for div2k SR. final project of Osher Sidi and Daniel Billk for Deep Learning and its Applications to Signal and Image Processing and Analysis 361.2.1120
 
 This repository implements and compares Super-Resolution (SR) models: a Vanilla CNN-based model and SRFlow. It upscales low-resolution (LR) images to high-resolution (HR) and evaluates results using metrics and visualizations.
 This also includes ablation studies with training with a wegihted mse+mge loss 
+
 Osher sidi – 318420239
 Daniel Bilik – 213196207
 
