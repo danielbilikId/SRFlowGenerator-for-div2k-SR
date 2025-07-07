@@ -63,10 +63,13 @@ class DIV2KDataset(Dataset):
             self.lr_images = torch.stack(img_lr_list)
             self.hr_images = torch.stack(img_hr_list)
 
+            os.makedirs(os.path.dirname(x_path), exist_ok=True)
+            os.makedirs(os.path.dirname(y_path), exist_ok=True)
+
             np.save(x_path, self.lr_images.numpy())
             np.save(y_path, self.hr_images.numpy())
             print(f"Saved preprocessed {self.data_type} data to {x_path} and {y_path}")
-
+    
     def __len__(self):
         return len(self.lr_images)
 
